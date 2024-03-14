@@ -12,8 +12,7 @@ cdr_data = [
     {'Identifiant': 1452, 'Type_call': 2, 'Duree': 0 , 'Taxe': 2, 'Total_volume': 26},
     {'Identifiant': 1453, 'Type_call': 2, 'Duree': 0 , 'Taxe': 2, 'Total_volume': 123},
     {'Identifiant': 1454, 'Type_call': 2, 'Duree': 0 , 'Taxe': 2, 'Total_volume': 1024},
-    {'Identifiant': 1455, 'Type_call': 1, 'Duree': 0 , 'Taxe': 2, 'Total_volume': 0},
-    {'Identifiant': 1456, 'Type_call': 0, 'Duree': 63 , 'Taxe': 2, 'Total_volume': 0},
+    {'Identifiant': 1455, 'Type_call': 1, 'Duree': 0 , 'Taxe': 2, 'Total_volume': 0},    {'Identifiant': 1456, 'Type_call': 0, 'Duree': 63 , 'Taxe': 2, 'Total_volume': 0},
     {'Identifiant': 1457, 'Type_call': 1, 'Duree': 0 , 'Taxe': 2, 'Total_volume': 0},
     {'Identifiant': 1458, 'Type_call': 1, 'Duree': 0 , 'Taxe': 2, 'Total_volume': 0},   
     {'Identifiant': 1459, 'Type_call': 1, 'Duree': 0 , 'Taxe': 2, 'Total_volume': 0},
@@ -64,7 +63,26 @@ nb_total_sms = df[df['Type_call'] == 1].shape[0]
 
 # Calculer les gigaoctets utilisés pour Internet
 gigabytes_utilises = df[df['Type_call'] == 2]['Total_volume'].sum() / 1024  # Convertir en Go
+
 print(f"Durée totale des appels : {duree_totale_appels} secondes")
 print(f"Nombre total de SMS : {nb_total_sms}")
 print(f"Gigaoctets utilisés : {gigabytes_utilises:.2f} Go")
+# Calculer le montant de facturation pour chaque enregistrement
+def calculer_montant(row):
+    if row['Type_call'] == 0:  # Appel
+        return row['Duree'] * 0.025  # Coût par minute pour un appel
+    elif row['Type_call'] == 1:  # SMS
+        return 0.001 if row['Type_call'] == row['Type_call'] else 0.002  # Coût par SMS
+    elif row['Type_call'] == 2:  # Internet
+        return row['Total_volume'] * 0.03  # Coût par Mo
 
+df['Montant'] = df.apply(calculer_montant, axis=1)
+
+# Calculer le montant total dépensé par chaque client
+montants_par_client = df.groupby('Identifiant')['Montant'].sum()
+
+# Afficher les montants par client
+for client_id, montant in montants_par_client.items():
+    print(f"Client {client_id} : Montant total dépensé = ${montant:.2f}")
+    
+print("le montant de facturation totale est : ", sum(montants_par_client))

@@ -1,3 +1,5 @@
+
+
 from Client import *
 import unittest
 import time as t
@@ -356,7 +358,8 @@ class payement(unittest.TestCase):
         self.assertEqual(expectedSolde, sut.amount)
         print(len(Client))
 
-if _name_ == "_main_":
-    print('_')
+if __name__ == "__main__":
+    print('___________________________________________')
     t.sleep(2)
-    unittest.main()
+    unittest.main()
+
